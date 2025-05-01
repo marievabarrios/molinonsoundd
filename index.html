@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1">
+<title>Molinon Festival</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#FF0000',secondary:'#B91C1C'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #FCFCFC;
+}
+.festival-countdown {
+background-image: url('https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/289ce2d39ca5dc5b2e16647d5bbd3a3e.png');
+background-size: cover;
+background-position: center;
+}
+.artist-card {
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.tab-active {
+color: #FF0000;
+border-bottom: 2px solid #FF0000;
+}
+</style>
+</head>
+<body class="bg-white">
+<!-- Nav Bar -->
+<div class="fixed top-0 w-full bg-white shadow-md z-50">
+<div class="flex items-center px-4 py-4">
+<div class="w-12 h-12 flex items-center justify-center mr-4">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/f2d9bf350e59c3ccc8b7ddc9ca10b55b.png" alt="M Festival Logo" class="w-[400%] h-[400%] object-contain">
+</div>
+<div class="flex-1 flex items-center justify-start pl-8">
+<div class="w-40 h-12">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/f1c24a8c2017d1ef72aeed661e02bf50.png" alt="M Festival Text Logo" class="w-full h-full object-contain">
+</div>
+<div class="flex items-center space-x-4 absolute right-4">
+<div class="w-10 h-10 flex items-center justify-center cursor-pointer" id="searchButton">
+<i class="ri-search-line ri-xl"></i>
+</div>
+<!-- Search Modal -->
+<div id="searchModal" class="fixed inset-0 bg-black/50 z-[60] hidden">
+<div class="fixed top-0 left-0 right-0 bg-white p-4">
+<div class="relative flex items-center">
+<div class="absolute left-3">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+<input type="text" id="searchInput" class="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-lg" placeholder="Buscar artistas, eventos, comida...">
+<button id="closeSearchModal" class="absolute right-0 w-10 h-10 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div id="searchResults" class="mt-4 space-y-4 max-h-[80vh] overflow-y-auto">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="pt-20 pb-20">
+<!-- Festival Countdown -->
+<div class="festival-countdown relative h-48">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full p-4 text-white">
+<div class="h-20 mb-1">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/250e21b3de8002c04444460ca3bae9fd.png" alt="M Festival 2025" class="h-full w-auto object-contain">
+</div>
+<p class="text-sm mb-2">El Molinón Enrique Castro Quini • Julio 10 - Julio 12</p>
+<div class="flex space-x-2 mt-2">
+<div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-center">
+<p class="text-xl font-bold">00</p>
+<p class="text-xs">Días</p>
+</div>
+<div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-center">
+<p class="text-xl font-bold">00</p>
+<p class="text-xs">Horas</p>
+</div>
+<div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-center">
+<p class="text-xl font-bold">00</p>
+<p class="text-xs">Minutos</p>
+</div>
+<div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-center">
+<p class="text-xl font-bold">00</p>
+<p class="text-xs">Segundos</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Access Tabs -->
+<div class="flex justify-between px-4 mb-6 border-b">
+<button id="programaTab" class="tab-active py-3 px-2 text-sm font-medium">Programa</button>
+<button id="artistasTab" class="py-3 px-2 text-sm font-medium text-gray-600">Artistas</button>
+<button id="entradasTab" class="py-3 px-2 text-sm font-medium text-gray-600">Entradas</button>
+<button id="mapaTab" class="py-3 px-2 text-sm font-medium text-gray-600" onclick="window.open('https://www.google.es/maps/place/Estadio+Municipal+El+Molinón-Enrique+Castro+«Quini»/@43.5362506,-5.6374096,16z/data=!3m1!4b1!4m6!3m5!1s0xd367c68a522f2e3:0x3632b8cb7063b686!8m2!3d43.5362506!4d-5.6374096!16zL20vMDZ6d2M0?entry=ttu&g_ep=EgoyMDI1MDQyOC4wIKXMDSoASAFQAw%3D%3D', '_blank')">Mapa</button>
+<button class="py-3 px-2 text-sm font-medium text-gray-600">Info</button>
+</div>
+<!-- Headliners -->
+<div class="px-4 mb-6">
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-lg font-bold">Artistas</h2>
+<button id="showAllArtists" class="text-primary text-sm">Ver todo</button>
+</div>
+<div class="flex overflow-x-auto space-x-4 pb-2">
+<div class="flex-shrink-0 w-32">
+<a href="https://open.spotify.com/artist/7n2wHs1TKAczGzO7Dd2rGr" class="block cursor-pointer" target="_blank" rel="noopener noreferrer">
+<div class="rounded-lg overflow-hidden h-32 mb-1">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/6ccfca8f45c6b4b5f075ff8c5dc88ca0.png" class="w-full h-full object-cover object-center" alt="Artist">
+</div>
+<p class="font-medium text-sm">Shawn Mendes</p>
+<p class="text-xs text-gray-500">Julio 10 • 9:30 PM</p>
+</a>
+</div>
+<div class="flex-shrink-0 w-32">
+<a href="https://open.spotify.com/intl-es/artist/7eLcDZDYHXZCebtQmVFL25?si=_td0khpfRw-opHB1ue-9dg" class="block cursor-pointer" target="_blank" rel="noopener noreferrer">
+<div class="rounded-lg overflow-hidden h-32 mb-1">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/4d05d27e62f91409f6e25dd271c2b71f.jpeg" class="w-full h-full object-cover object-center" alt="Artist">
+</div>
+<p class="font-medium text-sm">Aitana</p>
+<p class="text-xs text-gray-500">Julio 10 • 10:00 PM</p>
+</a>
+</div>
+<div class="flex-shrink-0 w-32">
+<a href="https://open.spotify.com/intl-es/artist/6KImCVD70vtIoJWnq6nGn3?si=bWkAP8c6S4SzbbBSgHxfpw" class="block cursor-pointer" target="_blank" rel="noopener noreferrer">
+<div class="rounded-lg overflow-hidden h-32 mb-1">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/2aaf9d2a659d93c316714ae74bae6117.png" class="w-full h-full object-cover object-center" alt="Artist">
+</div>
+<p class="font-medium text-sm">Harry Styles</p>
+<p class="text-xs text-gray-500">Julio 10 • 11:00 PM</p>
+</a>
+</div>
+<div class="flex-shrink-0 w-32">
+<a href="https://open.spotify.com/intl-es/artist/06HL4z0CvFAxyc27GXpf02?si=8PCiuaf4SbOcq-DJueiomw" class="block cursor-pointer" target="_blank" rel="noopener noreferrer">
+<div class="rounded-lg overflow-hidden h-32 mb-1">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/2a3f582655b3c138fc5e7851486df6cb.jpeg" class="w-full h-full object-cover object-center" alt="Artist">
+</div>
+<p class="font-medium text-sm">Taylor Swift</p>
+<p class="text-xs text-gray-500">Julio 11 • 8:00 PM</p>
+</a>
+</div>
+</div>
+</div>
+<!-- Today's Schedule -->
+<div class="px-4 mb-6">
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-lg font-bold">Programa de hoy</h2>
+<div class="flex items-center bg-gray-100 rounded-full px-3 py-1">
+<span class="text-xs font-medium">Julio 10</span>
+<i class="ri-calendar-line ri-sm ml-1"></i>
+</div>
+</div>
+<div class="space-y-3">
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex">
+<div class="flex flex-col items-center justify-center mr-3 w-16">
+<p class="text-sm font-bold">7:00</p>
+<p class="text-xs text-gray-500">PM</p>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-medium">Ceremonia de Apertura</h3>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full cursor-pointer">
+<i class="ri-heart-line ri-sm"></i>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex">
+<div class="flex flex-col items-center justify-center mr-3 w-16">
+<p class="text-sm font-bold">9:30</p>
+<p class="text-xs text-gray-500">PM</p>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-medium">Shawn Mendes</h3>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full cursor-pointer">
+<i class="ri-heart-line ri-sm"></i>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex">
+<div class="flex flex-col items-center justify-center mr-3 w-16">
+<p class="text-sm font-bold">10:00</p>
+<p class="text-xs text-gray-500">PM</p>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-medium">Aitana</h3>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full cursor-pointer">
+<i class="ri-heart-line ri-sm"></i>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex">
+<div class="flex flex-col items-center justify-center mr-3 w-16">
+<p class="text-sm font-bold">11:00</p>
+<p class="text-xs text-gray-500">PM</p>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-medium">Harry Styles</h3>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full cursor-pointer">
+<i class="ri-heart-line ri-sm"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Venue Map -->
+<div class="px-4 mb-6">
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-lg font-bold">Mapa</h2>
+<a href="https://www.google.es/maps/place/Estadio+Municipal+El+Molinón-Enrique+Castro+«Quini»/@43.5362506,-5.6374096,16z/data=!3m1!4b1!4m6!3m5!1s0xd367c68a522f2e3:0x3632b8cb7063b686!8m2!3d43.5362506!4d-5.6374096!16zL20vMDZ6d2M0?entry=ttu&g_ep=EgoyMDI1MDQyOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="text-primary text-sm">Google Maps</a>
+</div>
+<div class="rounded-lg overflow-hidden h-48 relative">
+<div class="absolute inset-0 bg-center bg-cover" style="background-image: url('https://public.readdy.ai/gen_page/map_placeholder_1280x720.png')"></div>
+<div class="absolute inset-0 flex flex-col items-center justify-center bg-black/10">
+<p class="text-white font-bold text-lg text-center px-4">Estadio Municipal El Molinón-Enrique Castro «Quini»</p>
+<a href="https://www.google.es/maps/place/Estadio+Municipal+El+Molinón-Enrique+Castro+«Quini»/@43.5362506,-5.6374096,16z/data=!3m1!4b1!4m6!3m5!1s0xd367c68a522f2e3:0x3632b8cb7063b686!8m2!3d43.5362506!4d-5.6374096!16zL20vMDZ6d2M0?entry=ttu&g_ep=EgoyMDI1MDQyOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" data-readdy="true" class="mt-2 bg-primary text-white px-4 py-2 rounded-button flex items-center">
+<i class="ri-map-pin-line ri-sm mr-1"></i>
+<span>Ver</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Brand Collaboration -->
+<div class="px-4 mb-6">
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-lg font-bold">Colaboración Especial</h2>
+</div>
+<div class="bg-gradient-to-r from-[#1E3764] to-[#192440] rounded-2xl p-4">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/6e81bcbcc190709f63a9b58d5705eaf7.png" alt="Red Bull" class="w-12 h-12 object-contain" style="background: transparent;">
+<span class="text-xl font-bold ml-2 text-white">x</span>
+<div class="w-24 h-12 flex items-center justify-center overflow-hidden">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/f2d9bf350e59c3ccc8b7ddc9ca10b55b.png" alt="M Festival Logo" class="w-[400%] h-[400%] object-contain">
+</div>
+</div>
+<a href="https://www.redbull.com" target="_blank" rel="noopener noreferrer" class="w-8 h-8 flex items-center justify-center bg-[#CC0001] rounded-full cursor-pointer hover:bg-[#A80001] transition-colors">
+<i class="ri-arrow-right-s-line text-white"></i>
+</a>
+</div>
+<div class="space-y-3">
+<h3 class="font-medium text-lg text-white">Energía sin Límites</h3>
+<p class="text-sm text-gray-300">Vive una experiencia llena de energía con Red Bull en El Molinón Sound. Descubre nuestras zonas de activación y disfruta de momentos únicos.</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-[#CC0001] px-3 py-1 rounded-full text-xs text-white">Red Bull Zone</span>
+<span class="bg-[#CC0001] px-3 py-1 rounded-full text-xs text-white">DJ Sessions</span>
+<span class="bg-[#CC0001] px-3 py-1 rounded-full text-xs text-white">Experiencias extremas</span>
+<span class="bg-[#CC0001] px-3 py-1 rounded-full text-xs text-white">Regalos exclusivos</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Festival Highlights -->
+<div class="px-4 mb-6">
+<h2 class="text-lg font-bold mb-3">Destacados del Festival</h2>
+<div class="grid grid-cols-2 gap-3">
+<div class="rounded-lg overflow-hidden">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/735123467f34ce8f5f0b0ee1d6e1a6d7.jpeg" class="w-full h-28 object-cover" alt="Food">
+<div class="bg-white p-2 shadow-sm">
+<p class="font-medium text-sm">Comida</p>
+<p class="text-xs text-gray-500">30+ food trucks</p>
+</div>
+</div>
+<div class="rounded-lg overflow-hidden">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/5798335000ea4028eca824fc53e80b05.png" class="w-full h-28 object-cover" alt="Merch">
+<div class="bg-white p-2 shadow-sm">
+<p class="font-medium text-sm">Tienda de merch</p>
+<p class="text-xs text-gray-500">Merch oficial del festival</p>
+</div>
+</div>
+<div class="rounded-lg overflow-hidden">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/8ab42fcc31b2e8677b994ad36ed1c987.jpeg" class="w-full h-28 object-cover" alt="Art">
+<div class="bg-white p-2 shadow-sm">
+<p class="font-medium text-sm">Stands de marcas</p>
+<p class="text-xs text-gray-500">30+ marcas</p>
+</div>
+</div>
+<div class="rounded-lg overflow-hidden">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/968bd1e2203106ff7911174fc736cf4e.jpeg" class="w-full h-28 object-cover" alt="VIP">
+<div class="bg-white p-2 shadow-sm">
+<p class="font-medium text-sm">Experiencia VIP</p>
+<p class="text-xs text-gray-500">Experiencia unica</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<div class="fixed right-4 bottom-20 z-40">
+<button id="ticketButton" class="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center cursor-pointer">
+<i class="ri-ticket-2-fill ri-xl text-white"></i>
+</button>
+</div>
+<!-- Ticket Purchase Modal -->
+<div id="ticketModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+<div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto">
+<div class="p-4">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-bold">Entradas del Festival</h2>
+<button id="closeTicketModal" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="space-y-4">
+<div class="border rounded-lg p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-medium">Abono 3 Días</h3>
+<p class="text-sm text-gray-500">Acceso completo al festival (10-12 de Julio)</p>
+</div>
+<p class="font-bold">€199</p>
+</div>
+<button onclick="handleTicketPurchase('Abono 3 Días', 199)" class="w-full bg-primary text-white py-2 rounded-button mt-2 flex items-center justify-center">
+<i class="ri-shopping-cart-line mr-2"></i>
+<span>Comprar Ahora</span>
+</button>
+</div>
+<div class="border rounded-lg p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-medium">Experiencia VIP</h3>
+<p class="text-sm text-gray-500">Acceso premium y beneficios exclusivos</p>
+</div>
+<p class="font-bold">€399</p>
+</div>
+<button onclick="handleTicketPurchase('Experiencia VIP', 399)" class="w-full bg-primary text-white py-2 rounded-button mt-2 flex items-center justify-center">
+<i class="ri-shopping-cart-line mr-2"></i>
+<span>Comprar Ahora</span>
+</button>
+</div>
+<div class="border rounded-lg p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-medium">Entrada de Día</h3>
+<p class="text-sm text-gray-500">Elige tu día</p>
+</div>
+<p class="font-bold">€89</p>
+</div>
+<div class="grid grid-cols-3 gap-2 mt-2">
+<button onclick="handleTicketPurchase('Entrada 10 Julio', 89)" class="bg-gray-100 py-2 px-3 rounded-button text-sm hover:bg-primary hover:text-white transition-colors">10 Julio</button>
+<button onclick="handleTicketPurchase('Entrada 11 Julio', 89)" class="bg-gray-100 py-2 px-3 rounded-button text-sm hover:bg-primary hover:text-white transition-colors">11 Julio</button>
+<button onclick="handleTicketPurchase('Entrada 12 Julio', 89)" class="bg-gray-100 py-2 px-3 rounded-button text-sm hover:bg-primary hover:text-white transition-colors">12 Julio</button>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<p class="text-sm text-gray-500 mb-4">* Todas las entradas incluyen acceso a escenarios principales, zona de restauración e instalaciones artísticas</p>
+<button class="w-full bg-primary text-white py-3 rounded-button font-medium">Continuar al Pago</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab Bar -->
+<div class="fixed bottom-0 w-full bg-white border-t border-gray-200 z-50">
+<div class="grid grid-cols-3 h-16">
+<div class="flex flex-col items-center justify-center cursor-pointer">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-home-5-fill ri-lg text-primary"></i>
+</div>
+<span class="text-xs mt-1 text-primary">Inicio</span>
+</div>
+<div class="flex flex-col items-center justify-center cursor-pointer" id="mCoinButton">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-coin-line ri-lg text-gray-500"></i>
+</div>
+<span class="text-xs mt-1 text-gray-500">M Coin</span>
+</div>
+<!-- M Coin Recharge Modal -->
+<div id="rechargeModal" class="fixed inset-0 bg-black/50 z-[60] hidden">
+<div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto">
+<div class="p-4">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-bold">Recargar M Coins</h2>
+<button id="closeRechargeModal" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<!-- Quick Recharge Options -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+<button onclick="handleRecharge(50)" class="border border-gray-200 rounded-xl p-4 hover:bg-gray-50">
+<div class="flex items-center justify-between mb-2">
+<i class="ri-coin-line text-primary"></i>
+<span class="text-xs text-gray-500">+250 coins</span>
+</div>
+<span class="text-lg font-medium">€50</span>
+</button>
+<button onclick="handleRecharge(100)" class="border border-gray-200 rounded-xl p-4 hover:bg-gray-50">
+<div class="flex items-center justify-between mb-2">
+<i class="ri-coin-line text-primary"></i>
+<span class="text-xs text-gray-500">+550 coins</span>
+</div>
+<span class="text-lg font-medium">€100</span>
+</button>
+<button onclick="handleRecharge(200)" class="border border-gray-200 rounded-xl p-4 hover:bg-gray-50">
+<div class="flex items-center justify-between mb-2">
+<i class="ri-coin-line text-primary"></i>
+<span class="text-xs text-gray-500">+1200 coins</span>
+</div>
+<span class="text-lg font-medium">€200</span>
+</button>
+<button onclick="handleRecharge(500)" class="border border-gray-200 rounded-xl p-4 hover:bg-gray-50">
+<div class="flex items-center justify-between mb-2">
+<i class="ri-coin-line text-primary"></i>
+<span class="text-xs text-gray-500">+3000 coins</span>
+</div>
+<span class="text-lg font-medium">€500</span>
+</button>
+</div>
+<!-- Custom Amount -->
+<div class="mb-6">
+<h3 class="font-medium mb-3">Cantidad personalizada</h3>
+<div class="flex items-center gap-3">
+<div class="flex-1 relative">
+<input type="number" id="customAmount" min="10" max="1000" class="w-full px-4 py-3 rounded-lg bg-gray-50 pr-12" placeholder="Cantidad en €">
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+</div>
+<button onclick="handleCustomRecharge()" class="bg-primary text-white px-4 py-3 rounded-lg whitespace-nowrap">
+Recargar
+</button>
+</div>
+<p class="text-xs text-gray-500 mt-2">Mínimo €10, máximo €1,000</p>
+</div>
+<!-- Payment Methods -->
+<div class="space-y-3">
+<h3 class="font-medium mb-3">Métodos de pago</h3>
+<button onclick="handlePayment('card')" class="w-full flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+<div class="flex items-center">
+<i class="ri-bank-card-line ri-lg mr-3"></i>
+<span>Tarjeta de crédito/débito</span>
+</div>
+<i class="ri-arrow-right-s-line"></i>
+</button>
+<button onclick="handlePayment('paypal')" class="w-full flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+<div class="flex items-center">
+<i class="ri-paypal-line ri-lg mr-3"></i>
+<span>PayPal</span>
+</div>
+<i class="ri-arrow-right-s-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- M Coin Modal -->
+<div id="mCoinModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+<div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto">
+<div class="p-4">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-bold">M Coin</h2>
+<button id="closeMCoinModal" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<!-- Balance Display -->
+<div class="bg-primary/10 rounded-xl p-4 mb-6">
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm text-gray-600">Tu balance</span>
+<button class="text-primary text-sm font-medium" onclick="showTransactionHistory()">Ver historial</button>
+</div>
+<div class="flex items-center">
+<i class="ri-coin-fill ri-2x text-primary mr-2"></i>
+<span class="text-2xl font-bold">1,250</span>
+<span class="text-sm text-gray-500 ml-1">M Coins</span>
+</div>
+</div>
+<!-- Quick Actions -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+<button onclick="showRechargeOptions()" class="flex flex-col items-center justify-center bg-gray-50 rounded-xl p-4 hover:bg-gray-100">
+<i class="ri-add-circle-line ri-2x text-primary mb-2"></i>
+<span class="text-sm font-medium">Recargar</span>
+</button>
+<button onclick="showPaymentQR()" class="flex flex-col items-center justify-center bg-gray-50 rounded-xl p-4 hover:bg-gray-100">
+<i class="ri-qr-code-line ri-2x text-primary mb-2"></i>
+<span class="text-sm font-medium">Pagar</span>
+</button>
+</div>
+<!-- Quick Recharge Options -->
+<div class="space-y-4 mb-6">
+<h3 class="font-medium mb-2">Recargas rápidas</h3>
+<div class="grid grid-cols-2 gap-3">
+<button onclick="handleRecharge(50)" class="border border-gray-200 rounded-xl p-3 hover:bg-gray-50">
+<div class="flex items-center justify-between mb-1">
+<i class="ri-coin-line text-primary"></i>
+<span class="text-xs text-gray-500">+250 coins</span>
+</div>
+<span class="text-lg font-medium">€50</span>
+</button>
+<button onclick="handleRecharge(100)" class="border border-gray-200 rounded-xl p-3 hover:bg-gray-50">
+<div class="flex items-center justify-between mb-1">
+<i class="ri-coin-line text-primary"></i>
+<span class="text-xs text-gray-500">+550 coins</span>
+</div>
+<span class="text-lg font-medium">€100</span>
+</button>
+</div>
+</div>
+<!-- Custom Recharge -->
+<div class="mb-6">
+<h3 class="font-medium mb-2">Recarga personalizada</h3>
+<div class="flex items-center gap-3">
+<div class="flex-1 relative">
+<input type="number" min="10" max="1000" class="w-full px-4 py-3 rounded-lg bg-gray-50 pr-12" placeholder="Cantidad en €">
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+</div>
+<button onclick="handleCustomRecharge()" class="bg-primary text-white px-4 py-3 rounded-lg whitespace-nowrap">
+Recargar
+</button>
+</div>
+<p class="text-xs text-gray-500 mt-2">Mínimo €10, máximo €1,000</p>
+</div>
+<!-- Recent Transactions -->
+<div>
+<div class="flex items-center justify-between mb-3">
+<h3 class="font-medium">Transacciones recientes</h3>
+<button onclick="showTransactionHistory()" class="text-primary text-sm">Ver todas</button>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-add-line text-primary"></i>
+</div>
+<div>
+<p class="font-medium">Recarga</p>
+<p class="text-xs text-gray-500">30 Abr, 15:30</p>
+</div>
+</div>
+<span class="text-green-500">+250 M Coins</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-shopping-bag-line text-primary"></i>
+</div>
+<div>
+<p class="font-medium">Comida</p>
+<p class="text-xs text-gray-500">30 Abr, 14:20</p>
+</div>
+</div>
+<span class="text-red-500">-45 M Coins</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center cursor-pointer" id="profileButton">
+<div class="w-6 h-6 flex items-center justify-center cursor-pointer">
+<i class="ri-user-line ri-lg text-gray-500"></i>
+</div>
+<span class="text-xs mt-1 text-gray-500">Perfil</span>
+</div>
+<!-- Profile Modal -->
+<div id="profileModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+<div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto">
+<div class="p-4">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-xl font-bold">Crear cuenta</h2>
+<button id="closeProfileModal" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<form id="registerForm" class="space-y-4">
+<div>
+<label class="block text-sm font-medium mb-1">Nombre completo</label>
+<input type="text" name="fullname" class="w-full px-4 py-3 rounded-lg bg-gray-50" placeholder="Ingresa tu nombre" required>
+</div>
+<div>
+<label class="block text-sm font-medium mb-1">Email</label>
+<input type="email" name="email" class="w-full px-4 py-3 rounded-lg bg-gray-50" placeholder="ejemplo@email.com" required>
+</div>
+<div>
+<label class="block text-sm font-medium mb-1">Contraseña</label>
+<input type="password" name="password" class="w-full px-4 py-3 rounded-lg bg-gray-50" placeholder="Mínimo 8 caracteres" required minlength="8">
+</div>
+<div>
+<label class="block text-sm font-medium mb-1">Fecha de nacimiento</label>
+<input type="date" name="birthdate" class="w-full px-4 py-3 rounded-lg bg-gray-50" required>
+</div>
+<div class="flex items-start">
+<input type="checkbox" id="terms" name="terms" class="mt-1" required>
+<label for="terms" class="text-sm text-gray-600 ml-2">Acepto los términos y condiciones y la política de privacidad del Molinón Sound.</label>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-medium">Crear cuenta</button>
+<div class="relative my-6">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-gray-200"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-2 bg-white text-gray-500">O continúa con</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button type="button" class="flex items-center justify-center px-4 py-3 border rounded-lg hover:bg-gray-50">
+<i class="ri-google-fill ri-lg mr-2"></i>
+<span>Google</span>
+</button>
+<button type="button" class="flex items-center justify-center px-4 py-3 border rounded-lg hover:bg-gray-50">
+<i class="ri-apple-fill ri-lg mr-2"></i>
+<span>Apple</span>
+</button>
+</div>
+<p class="text-sm text-center text-gray-600 mt-6">
+¿Ya tienes una cuenta? <button type="button" class="text-primary font-medium hover:underline transition-all" id="showLoginPage">Iniciar sesión</button>
+</p>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Saved Events Modal -->
+<div id="savedEventsModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+<div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto">
+<div class="p-4">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-bold">Eventos Guardados</h2>
+<button id="closeSavedEventsModal" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div id="savedEventsList" class="space-y-3">
+<div class="text-center text-gray-500 py-8">
+<i class="ri-bookmark-line ri-2x mb-2"></i>
+<p>No tienes eventos guardados</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- All Artists Modal -->
+<div id="artistsModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+<div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto">
+<div class="p-4">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-bold">Todos los Artistas</h2>
+<button id="closeArtistsModal" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="block">
+<div class="rounded-lg overflow-hidden h-40 mb-2">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/6ccfca8f45c6b4b5f075ff8c5dc88ca0.png" class="w-full h-full object-cover" alt="Shawn Mendes">
+</div>
+<h3 class="font-medium">Shawn Mendes</h3>
+<p class="text-sm text-gray-500">Julio 10 • 9:30 PM</p>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="block">
+<div class="rounded-lg overflow-hidden h-40 mb-2">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/4d05d27e62f91409f6e25dd271c2b71f.jpeg" class="w-full h-full object-cover" alt="Aitana">
+</div>
+<h3 class="font-medium">Aitana</h3>
+<p class="text-sm text-gray-500">Julio 10 • 10:00 PM</p>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="block">
+<div class="rounded-lg overflow-hidden h-40 mb-2">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/2aaf9d2a659d93c316714ae74bae6117.png" class="w-full h-full object-cover" alt="Harry Styles">
+</div>
+<h3 class="font-medium">Harry Styles</h3>
+<p class="text-sm text-gray-500">Julio 10 • 11:00 PM</p>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="block">
+<div class="rounded-lg overflow-hidden h-40 mb-2">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/2a3f582655b3c138fc5e7851486df6cb.jpeg" class="w-full h-full object-cover" alt="Taylor Swift">
+</div>
+<h3 class="font-medium">Taylor Swift</h3>
+<p class="text-sm text-gray-500">Julio 11 • 8:00 PM</p>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="block">
+<div class="rounded-lg overflow-hidden h-40 mb-2">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/2af945e15df4ad867c62b3e400326df1.jpeg" class="w-full h-full object-cover" alt="Quevedo">
+</div>
+<h3 class="font-medium">Quevedo</h3>
+<p class="text-sm text-gray-500">Julio 12 • 9:00 PM</p>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+<div class="block">
+<div class="rounded-lg overflow-hidden h-40 mb-2">
+<img src="https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/66f6316644db307799af2bf1c6d53acf.jpeg" class="w-full h-full object-cover" alt="Feid">
+</div>
+<h3 class="font-medium">Feid</h3>
+<p class="text-sm text-gray-500">Julio 12 • 10:30 PM</p>
+<p class="text-xs text-gray-500">Escenario Principal</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+function showRechargeOptions() {
+const rechargeModal = document.getElementById('rechargeModal');
+rechargeModal.classList.remove('hidden');
+}
+function showPaymentQR() {
+const qrModal = document.createElement('div');
+qrModal.className = 'fixed inset-0 bg-black/50 z-[60] flex items-center justify-center';
+qrModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold">Pagar con QR</h3>
+<button onclick="this.closest('.fixed').remove()" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="bg-gray-100 w-64 h-64 mx-auto mb-4 rounded-lg flex items-center justify-center">
+<i class="ri-qr-code-line ri-4x text-gray-400"></i>
+</div>
+<p class="text-gray-600 mb-2">Escanea para pagar</p>
+<p class="text-xs text-gray-500">El código QR se actualiza cada 5 minutos</p>
+</div>
+`;
+document.body.appendChild(qrModal);
+}
+function showTransactionHistory() {
+const historyModal = document.createElement('div');
+historyModal.className = 'fixed inset-0 bg-black/50 z-[60] flex items-center justify-center';
+historyModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold">Historial de transacciones</h3>
+<button onclick="this.closest('.fixed').remove()" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-add-line text-primary"></i>
+</div>
+<div>
+<p class="font-medium">Recarga</p>
+<p class="text-xs text-gray-500">30 Abr, 15:30</p>
+</div>
+</div>
+<span class="text-green-500">+250 M Coins</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-shopping-bag-line text-primary"></i>
+</div>
+<div>
+<p class="font-medium">Comida</p>
+<p class="text-xs text-gray-500">30 Abr, 14:20</p>
+</div>
+</div>
+<span class="text-red-500">-45 M Coins</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+<i class="ri-shopping-bag-line text-primary"></i>
+</div>
+<div>
+<p class="font-medium">Merch Store</p>
+<p class="text-xs text-gray-500">30 Abr, 12:15</p>
+</div>
+</div>
+<span class="text-red-500">-120 M Coins</span>
+</div>
+</div>
+</div>
+`;
+document.body.appendChild(historyModal);
+}
+function handleRecharge(amount) {
+const confirmModal = document.createElement('div');
+confirmModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+confirmModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold">Confirmar recarga</h3>
+<button onclick="this.closest('.fixed').remove()" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg mb-6">
+<div class="flex justify-between mb-2">
+<span class="text-gray-600">Cantidad:</span>
+<span class="font-medium">€${amount}</span>
+</div>
+<div class="flex justify-between">
+<span class="text-gray-600">Recibirás:</span>
+<span class="font-medium text-primary">${amount * 5} M Coins</span>
+</div>
+</div>
+<div class="space-y-3">
+<button onclick="processRecharge(${amount})" class="w-full bg-primary text-white py-3 rounded-button flex items-center justify-center">
+<i class="ri-bank-card-line mr-2"></i>
+<span>Pagar con Tarjeta</span>
+</button>
+<button onclick="processRecharge(${amount}, 'paypal')" class="w-full bg-[#0070BA] text-white py-3 rounded-button flex items-center justify-center">
+<i class="ri-paypal-line mr-2"></i>
+<span>Pagar con PayPal</span>
+</button>
+</div>
+</div>
+`;
+document.body.appendChild(confirmModal);
+}
+function handleCustomRecharge() {
+const input = document.querySelector('input[type="number"]');
+const amount = parseInt(input.value);
+if (amount >= 10 && amount <= 1000) {
+handleRecharge(amount);
+} else {
+const errorModal = document.createElement('div');
+errorModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+errorModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-error-warning-line ri-2x text-red-500"></i>
+</div>
+<h3 class="text-xl font-bold mb-2">Cantidad inválida</h3>
+<p class="text-gray-600 mb-6">Por favor, ingresa una cantidad entre €10 y €1,000</p>
+<button onclick="this.closest('.fixed').remove()" class="w-full bg-primary text-white py-3 rounded-button">Aceptar</button>
+</div>
+`;
+document.body.appendChild(errorModal);
+}
+}
+function processRecharge(amount, method = 'card') {
+const loadingModal = document.createElement('div');
+loadingModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+loadingModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+<p class="text-lg font-medium">Procesando recarga...</p>
+<p class="text-sm text-gray-500 mt-2">Por favor, no cierres esta ventana</p>
+</div>
+`;
+document.body.appendChild(loadingModal);
+setTimeout(() => {
+loadingModal.remove();
+const successModal = document.createElement('div');
+successModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+successModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-check-line ri-2x text-green-500"></i>
+</div>
+<h3 class="text-xl font-bold mb-2">¡Recarga exitosa!</h3>
+<p class="text-gray-600 mb-6">Has recargado ${amount * 5} M Coins</p>
+<button onclick="location.reload()" class="w-full bg-primary text-white py-3 rounded-button">Aceptar</button>
+</div>
+`;
+document.body.appendChild(successModal);
+}, 2000);
+}
+function handleTicketPurchase(ticketType, price) {
+const purchaseModal = document.createElement('div');
+purchaseModal.className = 'fixed inset-0 bg-black/50 z-[60] flex items-center justify-center';
+purchaseModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold">Confirmar Compra</h3>
+<button class="w-8 h-8 flex items-center justify-center" onclick="this.closest('.fixed').remove()">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="space-y-4">
+<div class="bg-gray-50 p-4 rounded-lg">
+<div class="flex justify-between mb-2">
+<span class="text-gray-600">Entrada:</span>
+<span class="font-medium">${ticketType}</span>
+</div>
+<div class="flex justify-between">
+<span class="text-gray-600">Precio:</span>
+<span class="font-medium">€${price}</span>
+</div>
+</div>
+<div class="space-y-2">
+<button onclick="processPayment()" class="w-full bg-primary text-white py-3 rounded-button flex items-center justify-center">
+<i class="ri-bank-card-line mr-2"></i>
+<span>Pagar con Tarjeta</span>
+</button>
+<button onclick="processPayment('paypal')" class="w-full bg-[#0070BA] text-white py-3 rounded-button flex items-center justify-center">
+<i class="ri-paypal-line mr-2"></i>
+<span>Pagar con PayPal</span>
+</button>
+</div>
+<p class="text-xs text-gray-500 text-center">Al realizar la compra, aceptas nuestros términos y condiciones</p>
+</div>
+</div>
+`;
+document.body.appendChild(purchaseModal);
+}
+function processPayment(method = 'card') {
+const loadingModal = document.createElement('div');
+loadingModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+loadingModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+<p class="text-lg font-medium">Procesando pago...</p>
+<p class="text-sm text-gray-500 mt-2">Por favor, no cierres esta ventana</p>
+</div>
+`;
+document.body.appendChild(loadingModal);
+setTimeout(() => {
+loadingModal.remove();
+const successModal = document.createElement('div');
+successModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+successModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-check-line ri-2x text-green-500"></i>
+</div>
+<h3 class="text-xl font-bold mb-2">¡Compra Exitosa!</h3>
+<p class="text-gray-600 mb-6">Recibirás un email con los detalles de tu compra</p>
+<button onclick="location.reload()" class="w-full bg-primary text-white py-3 rounded-button">Aceptar</button>
+</div>
+`;
+document.body.appendChild(successModal);
+}, 2000);
+}
+document.addEventListener('DOMContentLoaded', function() {
+// Search Functionality
+const searchButton = document.getElementById('searchButton');
+const searchModal = document.getElementById('searchModal');
+const closeSearchModal = document.getElementById('closeSearchModal');
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+searchButton.addEventListener('click', () => {
+searchModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+searchInput.focus();
+});
+closeSearchModal.addEventListener('click', () => {
+searchModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+searchInput.value = '';
+searchResults.innerHTML = '';
+});
+searchInput.addEventListener('input', (e) => {
+const query = e.target.value.toLowerCase();
+if (query.length === 0) {
+searchResults.innerHTML = '';
+return;
+}
+const mockData = [
+{ type: 'artist', name: 'Shawn Mendes', details: 'Julio 10 • 9:30 PM', image: 'https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/6ccfca8f45c6b4b5f075ff8c5dc88ca0.png' },
+{ type: 'artist', name: 'Aitana', details: 'Julio 10 • 10:00 PM', image: 'https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/4d05d27e62f91409f6e25dd271c2b71f.jpeg' },
+{ type: 'artist', name: 'Harry Styles', details: 'Julio 10 • 11:00 PM', image: 'https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/2aaf9d2a659d93c316714ae74bae6117.png' },
+{ type: 'food', name: 'Food Trucks', details: '30+ opciones de comida', image: 'https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/735123467f34ce8f5f0b0ee1d6e1a6d7.jpeg' },
+{ type: 'merch', name: 'Tienda de merch', details: 'Merch oficial del festival', image: 'https://static.readdy.ai/image/e237a09acd4b3d9ee17810232d5d07ae/5798335000ea4028eca824fc53e80b05.png' },
+];
+const filteredResults = mockData.filter(item =>
+item.name.toLowerCase().includes(query) ||
+item.details.toLowerCase().includes(query)
+);
+if (filteredResults.length === 0) {
+searchResults.innerHTML = `
+<div class="text-center py-8 text-gray-500">
+<i class="ri-search-line ri-2x mb-2"></i>
+<p>No se encontraron resultados</p>
+</div>
+`;
+return;
+}
+searchResults.innerHTML = filteredResults.map(result => `
+<div class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+<img src="${result.image}" class="w-12 h-12 rounded-lg object-cover mr-3" alt="${result.name}">
+<div>
+<h3 class="font-medium">${result.name}</h3>
+<p class="text-sm text-gray-500">${result.details}</p>
+</div>
+</div>
+`).join('');
+const resultElements = searchResults.querySelectorAll('.flex');
+resultElements.forEach((element, index) => {
+element.addEventListener('click', () => {
+const result = filteredResults[index];
+searchModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+searchInput.value = '';
+searchResults.innerHTML = '';
+if (result.type === 'artist') {
+const artistsModal = document.getElementById('artistsModal');
+artistsModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+} else if (result.type === 'food' || result.type === 'merch') {
+const highlightsSection = document.querySelector('h2.text-lg.font-bold:nth-of-type(4)');
+highlightsSection.scrollIntoView({ behavior: 'smooth' });
+}
+});
+});
+});
+// Countdown Timer
+const festivalDate = new Date('2025-07-10T00:00:00').getTime();
+function updateCountdown() {
+const now = new Date().getTime();
+const distance = festivalDate - now;
+if (distance < 0) {
+// Festival has started
+document.querySelectorAll('.festival-countdown .text-xl').forEach((el, index) => {
+el.textContent = '00';
+});
+return;
+}
+const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+const countdownElements = document.querySelectorAll('.festival-countdown .text-xl');
+countdownElements[0].textContent = days.toString().padStart(2, '0');
+countdownElements[1].textContent = hours.toString().padStart(2, '0');
+countdownElements[2].textContent = minutes.toString().padStart(2, '0');
+countdownElements[3].textContent = seconds.toString().padStart(2, '0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+});
+document.addEventListener('DOMContentLoaded', function() {
+// Tab switching functionality
+const tabs = document.querySelectorAll('[class*="py-3 px-2 text-sm font-medium"]');
+const programaTab = document.getElementById('programaTab');
+const artistasTab = document.getElementById('artistasTab');
+const entradasTab = document.getElementById('entradasTab');
+const mapaTab = document.getElementById('mapaTab');
+const artistsModal = document.getElementById('artistsModal');
+const ticketModal = document.getElementById('ticketModal');
+programaTab.addEventListener('click', () => {
+const programaSection = document.querySelector('h2.text-lg.font-bold');
+programaSection.scrollIntoView({ behavior: 'smooth' });
+});
+mapaTab.addEventListener('click', () => {
+const mapaSection = document.querySelector('h2.text-lg.font-bold:nth-of-type(3)');
+mapaSection.scrollIntoView({ behavior: 'smooth' });
+});
+tabs.forEach(tab => {
+tab.addEventListener('click', function() {
+// Remove active class from all tabs
+tabs.forEach(t => {
+t.classList.remove('tab-active');
+t.classList.add('text-gray-600');
+});
+// Add active class to clicked tab
+this.classList.add('tab-active');
+this.classList.remove('text-gray-600');
+// Show artists modal when Artistas tab is clicked
+if (this === artistasTab) {
+artistsModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+}
+// Show ticket modal when Entradas tab is clicked
+if (this === entradasTab) {
+ticketModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+}
+});
+});
+});
+document.addEventListener('DOMContentLoaded', function() {
+// M Coin Modal Functionality
+const mCoinButton = document.getElementById('mCoinButton');
+const mCoinModal = document.getElementById('mCoinModal');
+const closeMCoinModal = document.getElementById('closeMCoinModal');
+mCoinButton.addEventListener('click', () => {
+mCoinModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+});
+closeMCoinModal.addEventListener('click', () => {
+mCoinModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
+mCoinModal.addEventListener('click', (e) => {
+if (e.target === mCoinModal) {
+mCoinModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+}
+});
+// Profile Modal Functionality
+const profileButton = document.getElementById('profileButton');
+const profileModal = document.getElementById('profileModal');
+const closeProfileModal = document.getElementById('closeProfileModal');
+const registerForm = document.getElementById('registerForm');
+const showLoginPageButton = document.getElementById('showLoginPage');
+if (showLoginPageButton) {
+showLoginPageButton.addEventListener('click', () => {
+profileModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+showLoginForm();
+});
+}
+profileButton.addEventListener('click', () => {
+profileModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+});
+closeProfileModal.addEventListener('click', () => {
+profileModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
+profileModal.addEventListener('click', (e) => {
+if (e.target === profileModal) {
+profileModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+}
+});
+registerForm.addEventListener('submit', (e) => {
+e.preventDefault();
+const loadingModal = document.createElement('div');
+loadingModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+loadingModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+<p class="text-lg font-medium">Creando tu cuenta...</p>
+<p class="text-sm text-gray-500 mt-2">Por favor, espera un momento</p>
+</div>
+`;
+document.body.appendChild(loadingModal);
+setTimeout(() => {
+loadingModal.remove();
+const successModal = document.createElement('div');
+successModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+successModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-check-line ri-2x text-green-500"></i>
+</div>
+<h3 class="text-xl font-bold mb-2">¡Cuenta creada con éxito!</h3>
+<p class="text-gray-600 mb-6">Bienvenido al M Festival</p>
+<button onclick="location.reload()" class="w-full bg-primary text-white py-3 rounded-button">Comenzar</button>
+</div>
+`;
+document.body.appendChild(successModal);
+}, 2000);
+});
+function showLoginForm() {
+const loginModal = document.createElement('div');
+loginModal.className = 'fixed inset-0 bg-black/50 z-[60] flex items-center justify-center';
+loginModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold">Iniciar Sesión</h3>
+<button class="w-8 h-8 flex items-center justify-center" onclick="this.closest('.fixed').remove()">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium mb-1">Email</label>
+<input type="email" class="w-full px-4 py-3 rounded-lg bg-gray-50" placeholder="ejemplo@email.com" required>
+</div>
+<div>
+<label class="block text-sm font-medium mb-1">Contraseña</label>
+<input type="password" class="w-full px-4 py-3 rounded-lg bg-gray-50" placeholder="Tu contraseña" required>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-button">Iniciar Sesión</button>
+<div class="relative my-6">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-gray-200"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-2 bg-white text-gray-500">O continúa con</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button type="button" class="flex items-center justify-center px-4 py-3 border rounded-lg hover:bg-gray-50">
+<i class="ri-google-fill ri-lg mr-2"></i>
+<span>Google</span>
+</button>
+<button type="button" class="flex items-center justify-center px-4 py-3 border rounded-lg hover:bg-gray-50">
+<i class="ri-apple-fill ri-lg mr-2"></i>
+<span>Apple</span>
+</button>
+</div>
+</form>
+</div>
+`;
+document.body.appendChild(loginModal);
+}
+profileButton.addEventListener('click', () => {
+profileModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+});
+closeProfileModal.addEventListener('click', () => {
+profileModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
+profileModal.addEventListener('click', (e) => {
+if (e.target === profileModal) {
+profileModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+}
+});
+function showLoginPage() {
+const loginPage = document.createElement('div');
+loginPage.className = 'fixed inset-0 bg-white z-[60]';
+loginPage.innerHTML = `
+<div class="p-4">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-xl font-bold">Iniciar sesión</h2>
+<button id="closeLoginPage" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<form id="loginForm" class="space-y-4">
+<div>
+<label class="block text-sm font-medium mb-1">Email</label>
+<input type="email" name="email" class="w-full px-4 py-3 rounded-lg bg-gray-50" placeholder="ejemplo@email.com" required>
+</div>
+<div>
+<label class="block text-sm font-medium mb-1">Contraseña</label>
+<input type="password" name="password" class="w-full px-4 py-3 rounded-lg bg-gray-50" placeholder="Tu contraseña" required>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-medium">Iniciar sesión</button>
+<div class="relative my-6">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-gray-200"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-2 bg-white text-gray-500">O continúa con</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button type="button" class="flex items-center justify-center px-4 py-3 border rounded-lg hover:bg-gray-50">
+<i class="ri-google-fill ri-lg mr-2"></i>
+<span>Google</span>
+</button>
+<button type="button" class="flex items-center justify-center px-4 py-3 border rounded-lg hover:bg-gray-50">
+<i class="ri-apple-fill ri-lg mr-2"></i>
+<span>Apple</span>
+</button>
+</div>
+<p class="text-sm text-center text-gray-600 mt-6">
+¿No tienes una cuenta? <button type="button" id="showRegisterPage" class="text-primary font-medium hover:underline transition-all">Crear cuenta</button>
+</p>
+</form>
+</div>
+`;
+document.body.appendChild(loginPage);
+const closeLoginPage = loginPage.querySelector('#closeLoginPage');
+closeLoginPage.addEventListener('click', () => {
+loginPage.remove();
+});
+const showRegisterPage = loginPage.querySelector('#showRegisterPage');
+showRegisterPage.addEventListener('click', () => {
+loginPage.remove();
+profileModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+});
+const loginForm = loginPage.querySelector('#loginForm');
+loginForm.addEventListener('submit', (e) => {
+e.preventDefault();
+const loadingModal = document.createElement('div');
+loadingModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+loadingModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+<p class="text-lg font-medium">Iniciando sesión...</p>
+<p class="text-sm text-gray-500 mt-2">Por favor, espera un momento</p>
+</div>
+`;
+document.body.appendChild(loadingModal);
+setTimeout(() => {
+loadingModal.remove();
+const successModal = document.createElement('div');
+successModal.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center';
+successModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6 text-center">
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-check-line ri-2x text-green-500"></i>
+</div>
+<h3 class="text-xl font-bold mb-2">¡Bienvenido de nuevo!</h3>
+<p class="text-gray-600 mb-6">Has iniciado sesión correctamente</p>
+<button onclick="location.reload()" class="w-full bg-primary text-white py-3 rounded-button">Comenzar</button>
+</div>
+`;
+document.body.appendChild(successModal);
+}, 2000);
+});
+}
+function showRegisterForm() {
+const registerModal = document.createElement('div');
+registerModal.className = 'fixed inset-0 bg-black/50 z-[60] flex items-center justify-center';
+registerModal.innerHTML = `
+<div class="bg-white rounded-2xl w-[90%] max-w-md p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold">Registrarse</h3>
+<button class="w-8 h-8 flex items-center justify-center" onclick="this.closest('.fixed').remove()">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium mb-1">Nombre</label>
+<input type="text" class="w-full px-3 py-2 border rounded-lg" required>
+</div>
+<div>
+<label class="block text-sm font-medium mb-1">Email</label>
+<input type="email" class="w-full px-3 py-2 border rounded-lg" required>
+</div>
+<div>
+<label class="block text-sm font-medium mb-1">Contraseña</label>
+<input type="password" class="w-full px-3 py-2 border rounded-lg" required>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-button">Registrarse</button>
+</form>
+</div>
+`;
+document.body.appendChild(registerModal);
+}
+function handleLogout() {
+guestView.classList.remove('hidden');
+userView.classList.add('hidden');
+}
+// Artists Modal Functionality
+const showAllArtists = document.getElementById('showAllArtists');
+const artistsModal = document.getElementById('artistsModal');
+const closeArtistsModal = document.getElementById('closeArtistsModal');
+showAllArtists.addEventListener('click', () => {
+artistsModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+});
+closeArtistsModal.addEventListener('click', () => {
+artistsModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
+artistsModal.addEventListener('click', (e) => {
+if (e.target === artistsModal) {
+artistsModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+}
+});
+// Ticket Modal Functionality
+const ticketButton = document.getElementById('ticketButton');
+const ticketModal = document.getElementById('ticketModal');
+const closeTicketModal = document.getElementById('closeTicketModal');
+ticketButton.addEventListener('click', () => {
+ticketModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+});
+closeTicketModal.addEventListener('click', () => {
+ticketModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
+ticketModal.addEventListener('click', (e) => {
+if (e.target === ticketModal) {
+ticketModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+}
+});
+// Favorite toggle functionality
+const favoriteButtons = document.querySelectorAll('.ri-heart-line');
+favoriteButtons.forEach(button => {
+button.addEventListener('click', function() {
+if (this.classList.contains('ri-heart-line')) {
+this.classList.remove('ri-heart-line');
+this.classList.add('ri-heart-fill');
+this.classList.add('text-primary');
+this.parentElement.classList.add('bg-primary/10');
+} else {
+this.classList.add('ri-heart-line');
+this.classList.remove('ri-heart-fill');
+this.classList.remove('text-primary');
+this.parentElement.classList.remove('bg-primary/10');
+}
+});
+});
+});
+</script>
+</body>
+</html>
+
